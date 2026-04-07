@@ -1,0 +1,13 @@
+"""Evaluation prompt templates."""
+
+from .eval_templates import (
+    SECTION_AND_ARTICLE_EVAL_TEMPLATE,
+    TEXT_CITATION_EVAL_TEMPLATE,
+    SECTION_IMAGE_TEXT_EVAL_TEMPLATE
+)
+
+__all__ = [
+    'SECTION_AND_ARTICLE_EVAL_TEMPLATE',
+    'TEXT_CITATION_EVAL_TEMPLATE',
+    'SECTION_IMAGE_TEXT_EVAL_TEMPLATE'
+]

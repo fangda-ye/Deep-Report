@@ -1,0 +1,24 @@
+# Core Framework
+langgraph>=0.2.0
+langchain>=0.3.0
+langchain-openai>=0.2.0
+openai>=1.50.0
+
+# Retrieval Service
+flask>=3.0.0
+pymilvus>=2.4.0
+pillow>=10.0.0
+
+# Embeddings
+transformers>=4.45.0
+torch>=2.1.0
+
+# Evaluation
+tiktoken>=0.7.0
+
+# Utilities
+requests>=2.31.0
+tqdm>=4.66.0
+loguru>=0.7.0
+pyyaml>=6.0.0
+numpy>=1.26.0
