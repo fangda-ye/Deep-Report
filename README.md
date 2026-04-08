@@ -60,25 +60,36 @@ snapshot_download(
 "
 ```
 
-After download, your `data/` directory will contain:
+### Step 3: Extract Image Archives
+
+The sandbox images are distributed as compressed archives. Extract them after download:
+
+```bash
+cd data/sandbox
+mkdir -p images
+for f in TestImages.tar.gz TestRefImages.tar.gz TestAugImages.tar.gz; do
+  tar -xzf "$f" -C images/
+done
+```
+
+After extraction, your `data/` directory will contain:
 ```
 data/
 ├── benchmark/
 │   ├── article_deconstructions.jsonl          # 247 benchmark tasks
 │   └── article_deconstructions_enriched.jsonl # Tasks with retrieved evidence
-├── sandbox/
-│   ├── milvus_MMLF.db                        # Pre-built vector database (31GB)
-│   └── images/                                # Source images (22GB)
-│       ├── TestImages/
-│       ├── TestRefImages/
-│       └── TestAugImages/
-└── training/
-    ├── sft_combined_qwen3_filtered.jsonl      # SFT data (Qwen3 format)
-    ├── sft_combined_filtered.jsonl            # SFT data (Llama format)
-    └── dpo_combined_qwen3.jsonl               # DPO preference pairs
+└── sandbox/
+    ├── milvus_MMLF.db                        # Pre-built vector database (31GB)
+    ├── TestImages.tar.gz                      # (can delete after extraction)
+    ├── TestRefImages.tar.gz
+    ├── TestAugImages.tar.gz
+    └── images/                                # Extracted images (~22GB)
+        ├── TestImages/
+        ├── TestRefImages/
+        └── TestAugImages/
 ```
 
-### Step 3: Set API Keys
+### Step 4: Set API Keys
 
 ```bash
 export OPENAI_API_KEY="your-openai-api-key"
@@ -86,7 +97,7 @@ export OPENAI_BASE_URL="https://api.openai.com/v1"
 export QWEN_API_KEY="your-dashscope-api-key"   # used by the filter model
 ```
 
-### Step 4: Start the Retriever Service
+### Step 5: Start the Retriever Service
 
 ```bash
 cd retriever
@@ -101,7 +112,7 @@ curl -X POST http://localhost:5555/search \
   -d '{"query_list": ["renewable energy market analysis"], "type": "text", "topk": 5}'
 ```
 
-### Step 5: Generate a Report
+### Step 6: Generate a Report
 
 ```python
 from deep_reporter.api import LongGenAPI
@@ -120,7 +131,7 @@ result = api.generate_article(
 print(result["article"])
 ```
 
-### Step 6: Evaluate
+### Step 7: Evaluate
 
 ```bash
 cd evaluation
