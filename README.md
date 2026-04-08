@@ -14,7 +14,7 @@ Deep-Reporter is a unified agentic framework for generating comprehensive, evide
 ## Project Structure
 
 ```
-Deep-Reporter/
+Deep-Report/
 ├── deep_reporter/          # Core multi-agent framework (LangGraph)
 │   ├── core/               # StateGraph & state definitions
 │   ├── nodes/              # Agent nodes (planner, search, filter, writer)
@@ -40,12 +40,15 @@ Deep-Reporter/
 ### Step 1: Clone & Install
 
 ```bash
-git clone https://github.com/fangda-ye/Deep-Reporter.git
-cd Deep-Reporter
+git clone https://github.com/fangda-ye/Deep-Report.git
+cd Deep-Report
 pip install -r requirements.txt
 ```
 
 ### Step 2: Download Data from HuggingFace
+
+All benchmark data and the pre-built retrieval sandbox are hosted on HuggingFace:
+[https://huggingface.co/datasets/Fangda-Ye/Deep-Reporter-Data](https://huggingface.co/datasets/Fangda-Ye/Deep-Reporter-Data)
 
 ```bash
 pip install huggingface_hub
@@ -62,31 +65,33 @@ snapshot_download(
 
 ### Step 3: Extract Image Archives
 
-The sandbox images are distributed as compressed archives. Extract them after download:
+The sandbox images are distributed as compressed archives for efficient download. Extract them:
 
 ```bash
 cd data/sandbox
 mkdir -p images
 for f in TestImages.tar.gz TestRefImages.tar.gz TestAugImages.tar.gz; do
+  echo "Extracting $f..."
   tar -xzf "$f" -C images/
 done
+cd ../..  # back to project root
 ```
 
-After extraction, your `data/` directory will contain:
+After extraction, your `data/` directory will look like:
 ```
 data/
 ├── benchmark/
 │   ├── article_deconstructions.jsonl          # 247 benchmark tasks
 │   └── article_deconstructions_enriched.jsonl # Tasks with retrieved evidence
 └── sandbox/
-    ├── milvus_MMLF.db                        # Pre-built vector database (31GB)
+    ├── milvus_MMLF.db                        # Pre-built Milvus vector database (31 GB)
     ├── TestImages.tar.gz                      # (can delete after extraction)
     ├── TestRefImages.tar.gz
     ├── TestAugImages.tar.gz
-    └── images/                                # Extracted images (~22GB)
-        ├── TestImages/
-        ├── TestRefImages/
-        └── TestAugImages/
+    └── images/                                # Extracted source images (~22 GB)
+        ├── TestImages/       (2,332 images)
+        ├── TestRefImages/    (15,960 images)
+        └── TestAugImages/    (140,596 images)
 ```
 
 ### Step 4: Set API Keys
@@ -99,13 +104,15 @@ export QWEN_API_KEY="your-dashscope-api-key"   # used by the filter model
 
 ### Step 5: Start the Retriever Service
 
+Open a **separate terminal** in the project root:
+
 ```bash
 cd retriever
 export DATA_ROOT="../data"
 python retriever_app.py
 ```
 
-The service starts at `http://localhost:5555`. Verify:
+The service starts at `http://localhost:5555`. Verify it's working:
 ```bash
 curl -X POST http://localhost:5555/search \
   -H "Content-Type: application/json" \
@@ -113,6 +120,8 @@ curl -X POST http://localhost:5555/search \
 ```
 
 ### Step 6: Generate a Report
+
+In another terminal, from the **project root**:
 
 ```python
 from deep_reporter.api import LongGenAPI
