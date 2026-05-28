@@ -16,11 +16,12 @@ MILVUS_PATH = os.getenv("MILVUS_PATH", os.path.join(DATA_ROOT, "sandbox", "milvu
 
 IMAGE_BASE_DIR = os.getenv("IMAGE_BASE_DIR", os.path.join(DATA_ROOT, "sandbox", "images"))
 
-# Original image path prefixes stored in the DB (for remapping)
+# Original image path prefixes stored in the pre-built Milvus DB.
+# The retriever strips the matched prefix and joins the remainder with
+# IMAGE_BASE_DIR at query time, so users can place the extracted image
+# archives anywhere without editing the DB.
 ORIGINAL_IMAGE_PREFIXES = [
-    "/home/jovyan/Programs/MMLF/",
-    "/data/fangda/Programs/MMLF/row_data/imgs/",
-    "/mnt/",
+    "/M2LongBench/SandboxData/SourceImages/v1/",
 ]
 
 # ============== Processing Parameters ==============

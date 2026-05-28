@@ -56,7 +56,7 @@ API_CONFIG = {
 # Evaluation options
 SKIP_CITATIONS = False  # Set to True to skip image-text coherence evaluation
 SKIP_SEARCH = False     # Set to True to skip search precision evaluation
-LIMIT = 3  # Limit number of articles per file (None = no limit)
+LIMIT = None  # Limit number of articles per file (None = no limit; set to a small int for smoke tests)
 
 
 # Configure logging

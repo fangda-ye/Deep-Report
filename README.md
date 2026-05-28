@@ -124,21 +124,33 @@ curl -X POST http://localhost:5555/search \
 In another terminal, from the **project root**:
 
 ```python
-from deep_reporter.api import LongGenAPI
+from deep_reporter.api import create_openai_api
 
-api = LongGenAPI(
-    primary_model="gpt-5-mini",
-    retriever_url="http://localhost:5555/search",
-)
+api = create_openai_api({
+    "openai_api_key": "your-openai-api-key",
+    "openai_base_url": "https://api.openai.com/v1",
+    "primary_model": "gpt-5-mini",
+    "auxiliary_model": "gpt-5-mini",
+    "retriever_url": "http://localhost:5555/search",
+})
 
 result = api.generate_article(
-    query="Analyze the impact of large language models on scientific research",
-    use_planner=True,
+    overall_query="Analyze the impact of large language models on scientific research",
+    overall_checklist=[
+        "Cover key application areas across disciplines",
+        "Discuss methodological shifts in literature review and writing",
+        "Include limitations and risks",
+    ],
+    generation_mode="with_planner",
+    text_topk=20,
+    image_topk=10,
     enable_filter=True,
 )
 
-print(result["article"])
+print(result["final_article"])
 ```
+
+See `deep_reporter/example.py` for the full set of options.
 
 ### Step 7: Evaluate
 
@@ -146,10 +158,16 @@ print(result["article"])
 cd evaluation
 
 python batch_evaluate_all.py \
-    --input_dir ../gen_articles/ \
-    --deconstruction_file ../data/benchmark/article_deconstructions_enriched.jsonl \
-    --output_dir ./eval_results/
+    --input-files ../gen_articles/your_model_outputs.jsonl \
+    --benchmark ../data/benchmark/article_deconstructions.jsonl \
+    --enriched  ../data/benchmark/article_deconstructions_enriched.jsonl \
+    --article-output ./eval_results/article \
+    --search-output  ./eval_results/search
 ```
+
+> `article_deconstructions_enriched.jsonl` provides the silver-standard evidence pool
+> used to compute retrieval/citation precision against the benchmark; it must not
+> be fed back as oracle context to the generator.
 
 **Evaluation dimensions:**
 

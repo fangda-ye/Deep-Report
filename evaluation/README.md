@@ -28,10 +28,15 @@ Multi-dimensional evaluation for generated multimodal long-form reports.
 
 ```bash
 python batch_evaluate_all.py \
-    --input_dir ../gen_articles/your_model/ \
-    --deconstruction_file ../data/benchmark/article_deconstructions_enriched.jsonl \
-    --output_dir ./eval_results/
+    --input-files ../gen_articles/your_model_outputs.jsonl \
+    --benchmark ../data/benchmark/article_deconstructions.jsonl \
+    --enriched  ../data/benchmark/article_deconstructions_enriched.jsonl \
+    --article-output ./eval_results/article \
+    --search-output  ./eval_results/search
 ```
+
+`--input-files` accepts one or more JSONL files of generated outputs.
+Use `batch_evaluate_all_concurrent.py` (same arguments) for parallel evaluation.
 
 ### Environment Variables
 
