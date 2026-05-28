@@ -103,10 +103,26 @@ data/
 
 ### Step 4: Set API Keys
 
+The pipeline talks to up to three LLM endpoints. The minimum to run Step 6
+(generation only) is `OPENAI_API_KEY`; the others kick in for filtering and
+evaluation:
+
 ```bash
+# Required — primary writer LLM (any OpenAI-compatible chat model).
 export OPENAI_API_KEY="your-openai-api-key"
 export OPENAI_BASE_URL="https://api.openai.com/v1"
-export QWEN_API_KEY="your-dashscope-api-key"   # used by the filter model
+
+# Used by the text filter when enable_filter=True (default: Qwen on DashScope).
+# If unset, the filter call returns 401 and the pipeline silently falls back to
+# "no filtering" (all retrieved candidates are kept).
+export AUXILIARY_API_KEY="your-dashscope-api-key"
+export AUXILIARY_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
+
+# Optional — local VLM for image filtering and image-citation evaluation.
+# If the server is unreachable, image filtering falls back to top-K by score.
+# export VLM_BASE_URL="http://localhost:9000/v1"
+# export VLM_MODEL="internvl35-38b"
+# export VLM_API_KEY="EMPTY"
 ```
 
 ### Step 5: Start the Retriever Service
@@ -134,11 +150,10 @@ In another terminal, from the **project root**:
 from deep_reporter.api import create_openai_api
 
 api = create_openai_api({
-    "openai_api_key": "your-openai-api-key",
-    "openai_base_url": "https://api.openai.com/v1",
     "primary_model": "gpt-5-mini",
-    "auxiliary_model": "gpt-5-mini",
     "retriever_url": "http://localhost:5555/search",
+    # other keys (api keys, base urls, vlm config) default to the env vars
+    # exported in Step 4; pass them here to override per-call.
 })
 
 result = api.generate_article(
@@ -152,25 +167,48 @@ result = api.generate_article(
     text_topk=20,
     image_topk=10,
     enable_filter=True,
+    userid="deconstruct_AG001",   # used as the eval-side join key
 )
 
 print(result["final_article"])
 ```
 
-See `deep_reporter/example.py` for the full set of options.
+The full per-session record (search calls, filter decisions, sections, final article)
+is appended to `longform_generation_logs/longgen_sessions_<YYYYMMDD>.jsonl`; this is the
+JSONL that Step 7 consumes. To run the full 247-task benchmark, loop over
+`data/benchmark/article_deconstructions.jsonl` and call `generate_article` with
+`userid=f"deconstruct_{uid}"` for each task. See `deep_reporter/example.py` for the
+full set of options.
 
 ### Step 7: Evaluate
+
+Set the judge LLM credentials (separate from the generation keys above):
+
+```bash
+export GPT4_API_KEY="your-openai-api-key"          # GPT-4-class judge for article quality
+export GPT4_BASE_URL="https://api.openai.com/v1"
+export QWEN_API_KEY="your-dashscope-api-key"       # Text-citation judge
+export QWEN_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
+export VLM_BASE_URL="http://localhost:9000/v1"     # Image-citation judge (local InternVL)
+export VLM_MODEL="internvl35-38b"
+export VLM_API_KEY="EMPTY"
+```
+
+Then run:
 
 ```bash
 cd evaluation
 
 python batch_evaluate_all.py \
-    --input-files ../gen_articles/your_model_outputs.jsonl \
+    --input-files ../longform_generation_logs/longgen_sessions_*.jsonl \
     --benchmark ../data/benchmark/article_deconstructions.jsonl \
     --enriched  ../data/benchmark/article_deconstructions_enriched.jsonl \
     --article-output ./eval_results/article \
     --search-output  ./eval_results/search
 ```
+
+Pass `--skip-citations` to skip the VLM-dependent image-text coherence judge,
+and `--skip-search` to skip retrieval-precision evaluation.
 
 > `article_deconstructions_enriched.jsonl` provides the silver-standard evidence pool
 > used to compute retrieval/citation precision against the benchmark; it must not
