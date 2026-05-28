@@ -2,6 +2,13 @@
 
 **Deep Research for Grounded Multimodal Long-Form Generation**
 
+<p align="left">
+  <a href="https://arxiv.org/abs/2604.10741"><img src="https://img.shields.io/badge/arXiv-2604.10741-b31b1b.svg" alt="arXiv"></a>
+  <a href="https://huggingface.co/datasets/Fangda-Ye/Deep-Reporter-Data"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20Dataset-M2LongBench-yellow" alt="HF Dataset"></a>
+  <a href="https://github.com/fangda-ye/Deep-Report"><img src="https://img.shields.io/github/stars/fangda-ye/Deep-Report?style=social" alt="GitHub stars"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License"></a>
+</p>
+
 Deep-Reporter is a unified agentic framework for generating comprehensive, evidence-grounded multimodal reports. It orchestrates specialized agents for planning, multimodal retrieval, relevance filtering, and incremental synthesis to produce long-form reports with coherent text-image integration.
 
 ## Key Features
