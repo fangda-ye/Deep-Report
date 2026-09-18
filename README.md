@@ -31,7 +31,8 @@ Deep-Report/
 │   ├── utils/              # Logging, parsing utilities
 │   └── api.py              # Main API entry point
 ├── retriever/              # Multimodal retrieval service (Milvus + Jina)
-└── evaluation/             # Multi-dimensional evaluation system
+├── evaluation/             # Multi-dimensional evaluation system
+└── start.py                # Quick-start report generation entry point  
 ```
 
 ---
@@ -150,7 +151,7 @@ In another terminal, from the **project root**:
 python start.py
 ```
 
-The generated report is saved to ./result.md .
+The generated report is saved to `./result.md` .
 
 The full per-session record (search calls, filter decisions, sections, final article)
 is appended to `longform_generation_logs/longgen_sessions_<YYYYMMDD>.jsonl`; this is the
