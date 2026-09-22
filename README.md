@@ -31,7 +31,8 @@ Deep-Report/
 │   ├── utils/              # Logging, parsing utilities
 │   └── api.py              # Main API entry point
 ├── retriever/              # Multimodal retrieval service (Milvus + Jina)
-└── evaluation/             # Multi-dimensional evaluation system
+├── evaluation/             # Multi-dimensional evaluation system
+└── start.py                # Quick-start report generation entry point  
 ```
 
 ---
@@ -146,32 +147,11 @@ curl -X POST http://localhost:5555/search \
 
 In another terminal, from the **project root**:
 
-```python
-from deep_reporter.api import create_openai_api
-
-api = create_openai_api({
-    "primary_model": "gpt-5-mini",
-    "retriever_url": "http://localhost:5555/search",
-    # other keys (api keys, base urls, vlm config) default to the env vars
-    # exported in Step 4; pass them here to override per-call.
-})
-
-result = api.generate_article(
-    overall_query="Analyze the impact of large language models on scientific research",
-    overall_checklist=[
-        "Cover key application areas across disciplines",
-        "Discuss methodological shifts in literature review and writing",
-        "Include limitations and risks",
-    ],
-    generation_mode="with_planner",
-    text_topk=20,
-    image_topk=10,
-    enable_filter=True,
-    userid="deconstruct_AG001",   # used as the eval-side join key
-)
-
-print(result["final_article"])
+```Bash
+python start.py
 ```
+
+The generated report is saved to `./result.md` .
 
 The full per-session record (search calls, filter decisions, sections, final article)
 is appended to `longform_generation_logs/longgen_sessions_<YYYYMMDD>.jsonl`; this is the
